@@ -1,0 +1,88 @@
+The files in this directory handle how PyFL parses the freelancer ini data files, its error checking rules, 
+how it cross references & organizes data.
+
+The Freelancer ini's are broken up into groups, some of these groups are listed in the exe\Freelancer.ini of 
+your freelancer directory (in the [data] section), other groups are not defined in the freelancer config 
+files, like the Pilots group (data\missions\pilots_story.ini and pilots_population.ini).
+
+These groups each have a template ini, which contains the rules for parsing various [sections] in the group. 
+The template ini files are similar to FL's data files, using the same section names and keys in the sections, 
+but the value for each key contains the parsing rule.
+
+For example the [Motor] section in the Equipment.ini template (which handles all data\equipment\*_equip.ini files):
+
+[Motor]
+nickname = req|ugroup, word 
+lifetime = req, float 
+accel = req, float 
+delay = req, float 
+
+
+Rule format is listed below:
+
+[section]
+name = flags, type[x] [args]
+
+line flags:
+none			No flags for this line
+req          	This 'key = value' must exist in this section
+multi			This key can be multiline. if this is not specified, a key is only allowed to appear once in 
+                any particular section
+uglobal			No global duplicates - this value cant exist in any other sections in any group, this is a sort 
+                key (used for internal sorting of data, like 'nickname')
+ugroup 			No group duplicate - this value cant exist in any other sections in this group. This is a sort key.
+usection    	No Section duplicates - this value cant exist in any other similar sections in this group. 
+                This is a sort key.
+ulocal  		No local duplicates - this value cant exist in any of this section type in this file only. 
+                This is a sort key.
+uhash       	Hash this value. Technically counts as a sort key, but not used for sorting
+local      		Any -m matches must be local (from same file) see 'args' below
+
+type can be:
+bool    - true, false, 1 or 0
+byte    - 0 to 255
+int     - pos/neg number without decimals
+float   - pos/neg number including decimals
+ids     - a dll resource entry
+arch    - a FL hash code, signed, unsigned or hex
+word    - string with no spaces
+file    - a file we check exists
+ini     - a .ini file we load and parse. this should often include the -t arg flag for rule template matching
+cmp     - a .cmp or .3db file
+mat     - a .mat file
+wav     - a .wav file
+ale     - a .ale effect file
+thn     - a .thn script
+string  - any other value that can include any amount of any character like spaces (but not ,)
+
+type can also have multiples: key = int*2:
+LODranges = 0, 50
+could be represeted like int*2 (see the -o arg below)
+
+args flags:
+-o[=arg#]		
+    specifies this argument is optional and might not exist. =<arg#> only needs to be specified if you used a 
+    multiplier (int*2) these are all the same (no flags, 1 required int, and 1 optional int):
+    LODranges = none, int, int -o
+    LODranges = none, int, int -o=1
+    LODranges = none, int*2 -o=2
+
+    since LODranges can actually have more then 2 int values (in fact we cant actually predict how many int's 
+    might be in the LODranges key, 
+    we can omit the *2 on the last example above, and just use + or * 
+    LODranges = none, int+ -o=2
+    LODranges = none, int* -o=2
+
+--min=#
+    (byte,int,float,ids only) value must be above #
+--max=#
+    (byte,int,float,ids only) value must be below #
+
+-d=path
+    (file types only) specifies a dir relative to the freelancer\data\ dir.
+
+-t=group
+    (ini file type only) specifies the parser rule group to read this ini into
+
+-m=Group:Section
+    (word argument only) this argument must match a sort key in the specified Group/Section
