@@ -32,7 +32,6 @@ import freelancer.files.ini as _ini
 settings = None
 general = None
 modextractor = None
-logging = None
 resources = None
 
 _DEFAULTS = {
@@ -41,14 +40,11 @@ _DEFAULTS = {
         'validate_data' : 'true',
         'parse_referenced_files' : 'true',
         'match_checks': 'true',
-
-    },
-    'logging' : {
         'log_file' : 'PyFL.log',
-        'use_stdout' : 'true',
-        'level' : 'info',
-        'append' : 'true',
-        'timestamp' : 'true'
+        'log_stdout' : 'true',
+        'log_level' : 'warn',
+        'log_append' : 'true',
+        'log_timestamp' : 'true',
     }
 }
 
@@ -143,7 +139,7 @@ def load(filename):
     this module and should be one of the first things called. Its normally
     handled by freelancer.core.init()
     """
-    global settings, general, logging, resources
+    global settings, general, resources
     # TODO: Error handling note we cant properly log anything til after the
     # logger is loaded.  Unfortuantly the logger cant load until after settings
 
@@ -159,7 +155,6 @@ def load(filename):
     # pass the settings on to freelancer.files.ini since it cant import them
     _ini.s_general = general
 
-    logging = settings.find('logging')
     resources = settings.find('resources')
 
 
