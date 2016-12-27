@@ -52,7 +52,7 @@ def config(options):
     import sys
     global _root
     logging.addLevelName(35, 'NOTICE')
-    level = options.get('level', 'INFO').upper()
+    level = options.get('log_level', 'INFO').upper()
     if level is 'DEBUG':
         level = logging.DEBUG
     elif level is 'INFO':
@@ -66,7 +66,7 @@ def config(options):
     elif level is 'CRITICAL':
         level = logging.CRITICAL
 
-    if options.get('timestamp', True, dtype=bool):
+    if options.get('log_timestamp', True, dtype=bool):
         formatter = logging.Formatter("%(asctime)s [%(levelname)s]  %(message)s")
     else:
         formatter = logging.Formatter("[%(levelname)s]  %(message)s")
@@ -74,14 +74,14 @@ def config(options):
     _root = logging.getLogger()
     _root.setLevel(level)
     if options.get('log_file'):
-        if options.get('append', True, dtype=bool) is False:
+        if options.get('log_append', True, dtype=bool) is False:
             fih = open(options['log_file'], 'w')
             fih.close()
         fih = logging.FileHandler(options['log_file'])
         fih.setFormatter(formatter)
         _root.addHandler(fih)
         
-    if options.get('use_stdout', True, dtype=bool):
+    if options.get('log_stdout', True, dtype=bool):
         con = logging.StreamHandler(sys.stdout)
         con.setFormatter(formatter)
         _root.addHandler(con)
