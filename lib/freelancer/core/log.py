@@ -24,8 +24,18 @@
 """
 
 import logging
+import sys
 
-_root = None
+logging.addLevelName(35, 'NOTICE')
+_root = logging.getLogger()
+_root.setLevel(logging.DEBUG)
+_format = logging.Formatter("[%(levelname)s]  %(message)s")
+
+_file = None
+_stdout = logging.StreamHandler(sys.stdout)
+_stdout.setFormatter(_format)
+_root.addHandler(_stdout)
+
 
 def info(msg ):
     _root.info(msg)
@@ -49,9 +59,7 @@ def log(msg):
     _root.log(35, msg)
 
 def config(options):
-    import sys
-    global _root
-    logging.addLevelName(35, 'NOTICE')
+    global _file, _format
     level = options.get('log_level', 'INFO').upper()
     if level is 'DEBUG':
         level = logging.DEBUG
@@ -65,23 +73,25 @@ def config(options):
         level = logging.ERROR
     elif level is 'CRITICAL':
         level = logging.CRITICAL
+    _root.setLevel(level)
+
 
     if options.get('log_timestamp', True, dtype=bool):
-        formatter = logging.Formatter("%(asctime)s [%(levelname)s]  %(message)s")
+        newform = logging.Formatter("%(asctime)s [%(levelname)s]  %(message)s")
     else:
-        formatter = logging.Formatter("[%(levelname)s]  %(message)s")
-        
-    _root = logging.getLogger()
-    _root.setLevel(level)
+        newform = logging.Formatter("[%(levelname)s]  %(message)s")
+    _stdout.setFormatter(newform)
+    _format = newform
+    
+    #_root = logging.getLogger()
     if options.get('log_file'):
         if options.get('log_append', True, dtype=bool) is False:
             fih = open(options['log_file'], 'w')
             fih.close()
-        fih = logging.FileHandler(options['log_file'])
-        fih.setFormatter(formatter)
-        _root.addHandler(fih)
+
+        _file = logging.FileHandler(options['log_file'])
+        _file.setFormatter(_format)
+        _root.addHandler(_file)
         
-    if options.get('log_stdout', True, dtype=bool):
-        con = logging.StreamHandler(sys.stdout)
-        con.setFormatter(formatter)
-        _root.addHandler(con)
+    if not options.get('log_stdout', True, dtype=bool):
+        _root.removeHandler(_stdout)
