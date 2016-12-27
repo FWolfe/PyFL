@@ -21,52 +21,31 @@ Adoxa's resource extraction tools (frc.exe and res2frc.exe)
 
 -----------------------------------------------------------------------------------------
 INI PARSING NOTES:
-None of PyFL's ini parsing rules are 'hardcoded' these are all stored in .ini files themselves, 
-in a format similar to FL's data files. Initially it reads the freelancer.ini [data] section to 
-get lists of files and what kind of content to expect. For example it reads:
+None of PyFL's ini parsing rules are 'hardcoded' these are all stored in .ini files themselves, in a format similar to FL's data files. Initially it reads the freelancer.ini [data] section to get lists of files and what kind of content to expect. For example it reads:
 
 equipment = equipment\weapon_equip.ini
 
-and knows this is a 'equipment' file. In the PyFL\etc\parser directory there is a 'equipment.ini' 
-file, which contains templates for all the various equipment [Sections], each section has a series 
-of 'key = rules'. The 'keys' will match up with FL's ini files, and the 'rules' will tell PyFL how 
-to parse that line: if its required or optional, if its a sortkey like nickname, if its a ids value, 
-if the value is a integer/float/bool true/false etc, or if its a reference to another file PyFL should 
-load (like universe.ini points to the system files).
+and knows this is a 'equipment' file. In the PyFL\etc\parser directory there is a 'equipment.ini' file, which contains templates for all the various equipment [Sections], each section has a series of 'key = rules'. The 'keys' will match up with FL's ini files, and the 'rules' will tell PyFL how to parse that line: if its required or optional, if its a sortkey like nickname, if its a ids value, if the value is a integer/float/bool true/false etc, or if its a reference to another file PyFL should load (like universe.ini points to the system files).
 
-Using this method, PyFL's parser can be tweaked, edited, or fixed by non-coders. It just requires 
-modding knowledge and some understanding of the parsing rules. It also functions as a documenting system 
-for learning FL's ini files, as you can browse the rules and see exactly whats meant to go in the ini 
-files.
+Using this method, PyFL's parser can be tweaked, edited, or fixed by non-coders. It just requires modding knowledge and some understanding of the parsing rules. It also functions as a documenting system for learning FL's ini files, as you can browse the rules and see exactly whats meant to go in the ini files.
 For example in the Equipment.ini template, in the [CounterMeasure] section, the key = rule:
 
 loot_appearance = req, word -m=Equipment:LootCrate
 
-tells us loot_appearance is required (req), contains a single value...a word (no spaces allowed) and must 
-match a [LootCrate] sortkey (in this case a nickname) located in one of the equipment files.
+tells us loot_appearance is required (req), contains a single value...a word (no spaces allowed) and must match a [LootCrate] sortkey (in this case a nickname) located in one of the equipment files.
 
 
 -----------------------------------------------------------------------------------------
 KNOWN ISSUES AND BUGS:
-* Freelancer.ini has fx\explosions.ini listed as both 'explosions = ' and 'debris = '. The 
-parser doesn't like this as it only reads a file once, and under a single group. Therefore, ensure 
-'explosions = fx\explosions.ini' comes first in freelancer.ini
+* Freelancer.ini has fx\explosions.ini listed as both 'explosions = ' and 'debris = '. The parser doesn't like this as it only reads a file once, and under a single group. Therefore, ensure 'explosions = fx\explosions.ini' comes first in freelancer.ini
 
-* Room:Room_Info:scene lines are not properly parsed due to only allowing one -o argument per rule 
-line. The only effect is cityscape and planetscape files generate a error on some of these lines if a 
-argument appears after the thn script. The rest of the line is fully parsed but the final argument is 
-dropped.
+* Room:Room_Info:scene lines are not properly parsed due to only allowing one -o argument per rule line. The only effect is cityscape and planetscape files generate a error on some of these lines if a argument appears after the thn script. The rest of the line is fully parsed but the final argument is dropped.
 	
-* Various 'color' keys in the ini's support both byte (0 to 255) and float (0.0 to 1.0) values. The parser 
-doesn't agree with this, and may generate errors. Tweaking your rule files will fix this if your only uses 1 style 
-(byte or float, but not mixed)
+* Various 'color' keys in the ini's support both byte (0 to 255) and float (0.0 to 1.0) values. The parser doesn't agree with this, and may generate errors. Tweaking your rule files will fix this if your only uses 1 style (byte or float, but not mixed)
 
-* Many various rule files need tweaking for better argument matching, currently they may generate false positive 
-errors. The cross reference validation (-m|--match) rules especially need tweaks as not all of them have been 
-inputted yet.
+* Many various rule files need tweaking for better argument matching, currently they may generate false positive errors. The cross reference validation (-m|--match) rules especially need tweaks as not all of them have been inputted yet.
 
-* When using DataFile.set() or IniFile.set(), if the value is a list (declared multiline in the rules), the new 
-value list MUST be the same length as the old value list or a NotImplementedError exception is raised.
+* When using DataFile.set() or IniFile.set(), if the value is a list (declared multiline in the rules), the new value list MUST be the same length as the old value list or a NotImplementedError exception is raised.
 
 * -m|--match rule option generates errors on robots without heads (space_costume = lines in system files)
 
