@@ -55,7 +55,7 @@ except ImportError:
     pass
 
 
-from freelancer.core import settings, log
+from freelancer.core import settings, log, tools
 
 BLOCK_RE = re.compile(r'^([SH]) ([0-9]+)(?: (~))?(?:\W+(.+))?$')
 EOL_RE = re.compile('(?:\r\n|\r)')
@@ -137,16 +137,9 @@ def extract_frc_files(dllnames):
     """extract_frc_files(dllnames)
     If adoxa's res2frc.exe is installed, will create .frc files from the .dlls
     """
-    in_path = join(s_general['path'], 'EXE')
-    out_path = s_resources.get('frc_path', in_path)
-    for index, name in dllnames:
+    for index, name in enumerate(dllnames):
         name = splitext(name)[0]
-        call(['res2frc.exe',
-              '-o', out_path,
-              '-i', '-10',
-              '-r', str(index),
-              "-w", "4096",
-              join(in_path, name)])
+        tools.extract_frc(name, index)
 
 
 def compile_frcs(dllnames):
@@ -154,16 +147,9 @@ def compile_frcs(dllnames):
     If adoxa's frc.exe is installed, will compile the .frc files into the mod's
     .dll files
     """
-    out_path = join(s_general['path'], 'EXE')
-    in_path = s_resources.get('frc_path', out_path)
-    for _, name in dllnames:
+    for _, name in enumerate(dllnames):
         name = splitext(name)[0]
-        return call(['frc.exe',
-                     "-c",
-                     join(in_path, name),
-                     join(out_path, name)
-                    ])
-
+        tools.extract_frc(name)
 
 #==============================================================================
 #
@@ -209,7 +195,7 @@ class ResourceFile(object):
 #==============================================================================
 class DllFile(ResourceFile):
     """DllFile(name, index)
-    Object representing a resource .dll. This is the least preferd method:
+    Object representing a resource .dll. This is the least prefered method:
     requires win32api, read-only access
     """
     def __init__(self, name, index):

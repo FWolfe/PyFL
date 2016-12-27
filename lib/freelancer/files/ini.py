@@ -57,7 +57,6 @@ class IniFile(list):
         if not exists(path):
             log.warn("Missing File: %s" % path)
             raise FileReadError
-
         list.__init__(self)
         self.fullpath = path
         self._head = []

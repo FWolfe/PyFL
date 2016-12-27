@@ -3,13 +3,42 @@ Author: Fenris_Wolf - YSPStudios, TekagisTreasure mod
 
 **** Please note this is NOT a stand alone tool. ****
 
-It is designed to be a base framework for building tools, or to be used in a interactive python shell.
+It is designed to be a base framework for building tools, or to be used in a 
+interactive python shell.
 
-PyFL reads and parses ALL Freelancer ini files, and can manipulate the files writing changes back into them. 
-It provides brief summaries of the contents (number of ships, guns, systems etc), and detailed summaries of your 
-universe (which factions own bases in each system, who owns other objects, and who has a npc presence)
+PyFL reads and parses ALL Freelancer ini files, and can manipulate the files 
+writing changes back into them. It provides brief summaries of the contents 
+(number of ships, guns, systems etc), and detailed summaries of your universe 
+(which factions own bases in each system, who owns other objects, and who has 
+a npc presence)
 
-Its uses are pretty much unlimited when working in a interactive shell, or if you can write custom tool functions.
+Its uses are pretty much unlimited when working in a interactive shell, or if 
+you can write custom tool functions.
+
+A few examples of the things I've used it for:
+
+* Extracting all non-vanilla files from a mod into a new directory.
+* Extracting files that have changed from a mods previous version into a patch.
+* Finding all unreferenced unused junk files left over from previous mod versions.
+* Resorting the contents of files: putting our 3.4mb mbases.ini, universe.ini and 
+  markets all in proper order.
+* Nuking specific npc factions from the files.
+* Cleaning out mbases.ini removing all npcs execpt vendors, and making sure vendors
+  have the same faction as the base.
+* Adding the ids names stored in the dlls as comments to files on the ids_name lines.
+* Generating CRC lists of the mod files.
+* Generating full navmaps for inserting in player files.
+* Generating a .png image file of the universe navmap showing all jumps and systems 
+  colored by local_faction (requires graphvis to be installed).
+* Reverse hash lookup.
+* Error checking.
+* Creation of a 'mod aware' FLHook bot (using Hooks tcp sockets) with a skype interface 
+  and in game hook commands (including a ship garage command allowing for ships to be 
+  stored and shared by characters on a account).
+* Embedding python directly into a custom FLHook build allowing for quick generation of
+  new features and plugins, with full support of all of PyFL's many features. (Currently 
+  a work in progress, but functional)
+
 
 REQUIREMENTS:
 32bit python 2.7 (NOT 64bit, and NOT python 3.*)
@@ -20,50 +49,75 @@ OPTIONAL:
 VCForPython27 (required to compile the blist module)
 Adoxa's resource extraction tools (frc.exe and res2frc.exe)
 
+
+Some knowledge of python coding, you don't need to be a expert, basic knowledge is enough to 
+make use of PyFL, but more advanced knowledge is required to write custom tool functions.
+
+
 -----------------------------------------------------------------------------------------
 INI PARSING NOTES:
-None of PyFL's ini parsing rules are 'hardcoded' these are all stored in .ini files themselves, in a format similar to 
-FL's data files. Initially it reads the freelancer.ini [data] section to get lists of files and what kind of content to 
-expect. For example it reads:
+None of PyFL's ini parsing rules are 'hardcoded' these are all stored in .ini files themselves, 
+in a format similar to FL's data files. Initially it reads the freelancer.ini [data] section to 
+get lists of files and what kind of content to expect. For example it reads:
 
 equipment = equipment\weapon_equip.ini
 
-and knows this is a 'equipment' file. In the PyFL\etc\parser directory there is a 'equipment.ini' file, which contains 
-templates for all the various equipment [Sections], each section has a series of 'key = rules'. The 'keys' will match up 
-with FL's ini files, and the 'rules' will tell PyFL how to parse that line: if its required or optional, if its a sortkey 
-like nickname, if its a ids value, if the value is a integer/float/bool true/false etc, or if its a reference to another 
-file PyFL should load (like universe.ini points to the system files).
+and knows this is a 'equipment' file. In the PyFL\etc\parser directory there is a 'equipment.ini' 
+file, which contains templates for all the various equipment [Sections], each section has a series 
+of 'key = rules'. The 'keys' will match up with FL's ini files, and the 'rules' will tell PyFL how 
+to parse that line: if its required or optional, if its a sortkey like nickname, if its a ids value, 
+if the value is a integer/float/bool true/false etc, or if its a reference to another file PyFL should 
+load (like universe.ini points to the system files).
 
-Using this method, PyFL's parser can be tweaked, edited, or fixed by non-coders. It just requires modding knowledge and 
-some understanding of the parsing rules. It also functions as a documenting system for learning FL's ini files, as you 
-can browse the rules and see exactly whats meant to go in the ini files.
+Using this method, PyFL's parser can be tweaked, edited, or fixed by non-coders. It just requires 
+modding knowledge and some understanding of the parsing rules. It also functions as a documenting system 
+for learning FL's ini files, as you can browse the rules and see exactly whats meant to go in the ini 
+files.
 For example in the Equipment.ini template, in the [CounterMeasure] section, the key = rule:
 
 loot_appearance = req, word -m=Equipment:LootCrate
 
-tells us loot_appearance is required (req), contains a single value...a word (no spaces allowed) and must match a 
-[LootCrate] sortkey (in this case a nickname) located in one of the equipment files.
+tells us loot_appearance is required (req), contains a single value...a word (no spaces allowed) and must 
+match a [LootCrate] sortkey (in this case a nickname) located in one of the equipment files.
 
 
 -----------------------------------------------------------------------------------------
+
+
+-----------------------------------------------------------------------------------------
+Terminology:
+
+Data File - A ini file located in the freelancer\data folder or one of its sub folders
+Group - A collection of data files sorted into groups (Systems, Equipment, Goods). These should not be confused with with Freelancer
+	Groups (Factions), even though the official group for factions is Group. All functions that query or manipulate factions have 
+	'Faction' in the name. All functions that query or manipulate data groups have 'Group' in the name.
+	A full list of the group names can be found by looking at the ini names in the PyFL\etc\parser directory.
+Section - a [Section] located in the data files, and all the lines under until the next [Section] brackets.
+Key - The start of a line in the data files (key = some stuff)
+Value - The stuff after the Key = 
+Sortkey - A specific Key, usually used to locate a specific Group:Section, often unique (on some level). 'nickname' is the most common.
+
+-----------------------------------------------------------------------------------------
 KNOWN ISSUES AND BUGS:
-* Freelancer.ini has fx\explosions.ini listed as both 'explosions = ' and 'debris = '. The parser doesn't like this as 
-  it only reads a file once, and under a single group. Therefore, ensure 'explosions = fx\explosions.ini' comes first in 
-  freelancer.ini
+* Freelancer.ini has fx\explosions.ini listed as both 'explosions = ' and 'debris = '. The 
+parser doesn't like this as it only reads a file once, and under a single group. Therefore, ensure 
+'explosions = fx\explosions.ini' comes first in freelancer.ini
 
-* Room:Room_Info:scene lines are not properly parsed due to only allowing one -o argument per rule line. The only effect 
-  is cityscape and planetscape files generate a error on some of these lines if a argument appears after the thn script. 
-  The rest of the line is fully parsed but the final argument is dropped.
+* Room:Room_Info:scene lines are not properly parsed due to only allowing one -o argument per rule 
+line. The only effect is cityscape and planetscape files generate a error on some of these lines if a 
+argument appears after the thn script. The rest of the line is fully parsed but the final argument is 
+dropped.
 	
-* Various 'color' keys in the ini's support both byte (0 to 255) and float (0.0 to 1.0) values. The parser doesn't agree 
-  with this, and may generate errors. Tweaking your rule files will fix this if your only uses 1 style: byte or float, 
-  but not mixed
+* Various 'color' keys in the ini's support both byte (0 to 255) and float (0.0 to 1.0) values. The parser 
+doesn't agree with this, and may generate errors. Tweaking your rule files will fix this if your only uses 1 style 
+(byte or float, but not mixed)
 
-* Many various rule files need tweaking for better argument matching, currently they may generate false positive errors. 
-  The cross reference validation (-m|--match) rules especially need tweaks as not all of them have been inputted yet.
+* Many various rule files need tweaking for better argument matching, currently they may generate false positive 
+errors. The cross reference validation (-m|--match) rules especially need tweaks as not all of them have been 
+inputted yet.
 
-* When using DataFile.set() or IniFile.set(), if the value is a list (declared multiline in the rules), the new value list 
-  MUST be the same length as the old value list or a NotImplementedError exception is raised.
+* When using DataFile.set() or IniFile.set(), if the value is a list (declared multiline in the rules), the new 
+value list MUST be the same length as the old value list or a NotImplementedError exception is raised.
 
 * -m|--match rule option generates errors on robots without heads (space_costume = lines in system files)
 

@@ -33,6 +33,7 @@ settings = None
 general = None
 modextractor = None
 resources = None
+executables = None
 
 _DEFAULTS = {
     'general' : {
@@ -139,7 +140,7 @@ def load(filename):
     this module and should be one of the first things called. Its normally
     handled by freelancer.core.init()
     """
-    global settings, general, resources
+    global settings, general, resources, executables
     # TODO: Error handling note we cant properly log anything til after the
     # logger is loaded.  Unfortuantly the logger cant load until after settings
 
@@ -158,7 +159,7 @@ def load(filename):
     _ini.s_general = general
 
     resources = settings.find('resources')
-
+    executables = settings.find('executables')
 
 def get_section(section):
     """get_section(section)
