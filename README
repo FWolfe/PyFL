@@ -18,7 +18,6 @@ OPTIONAL:
 VCForPython27 (required to compile the blist module)
 Adoxa's resource extraction tools (frc.exe and res2frc.exe)
 
-
 -----------------------------------------------------------------------------------------
 INI PARSING NOTES:
 None of PyFL's ini parsing rules are 'hardcoded' these are all stored in .ini files themselves, in a format similar to FL's data files. Initially it reads the freelancer.ini [data] section to get lists of files and what kind of content to expect. For example it reads:
