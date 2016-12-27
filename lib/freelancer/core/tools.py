@@ -5,12 +5,11 @@ Created on Tue Dec 27 10:51:59 2016
 @author: Fenris_Wolf
 """
 import os
-import re
 from os.path import join, splitext
 from subprocess import call, check_output
 from freelancer.core import settings 
+from freelancer.core.regex import NEWLINE_SPLIT_RE
 
-NEWLINE_SPLIT_RE = re.compile('[\r\n]{1,2}')
 
 def _getpath(exe):
     if not settings.executables:
@@ -22,7 +21,8 @@ def extract_hashes(output_path=None):
     with open(os.devnull, 'w') as devnull:
         args = [_getpath('createid.exe'), '-n', '-oc', '-s', join(settings.general['path'], 'Data')]
         output = check_output(args, stderr=devnull)
-    output = NEWLINE_SPLIT_RE.split(output)
+    output = output.splitlines()
+    #output = NEWLINE_SPLIT_RE.split(output)
     if output_path:
         fih = open(output_path, 'w')
         [fih.write(x) for x in output]

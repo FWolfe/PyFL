@@ -29,7 +29,7 @@
 import re
 from os.path import join, exists
 
-from freelancer.bin import flHash
+#from freelancer.bin import flHash
 from freelancer.core import log, parser
 from freelancer.core import data as fldata
 from freelancer.core.data import stats_inc, STATS_LINES, STATS_FILES, STATS_SECTIONS, STATS_KEYS, STATS_ERRORS
@@ -525,7 +525,7 @@ class DataSection(IniSection):
         from freelancer.core.parser import GLOBAL_UNIQUE, GROUP_UNIQUE, SECTION_UNIQUE, \
                 LOCAL_UNIQUE, HASH_UNIQUE
 
-        flHash(sortval)
+        #flHash(sortval)
         sortval = sortval.lower()
         sortrule = rules[sortkey.lower()]
         sorttype = sortrule.sortkey

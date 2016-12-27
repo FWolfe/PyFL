@@ -25,6 +25,7 @@
 
 import re
 
+NEWLINE_SPLIT_RE = re.compile('[\r\n]{1,2}')
 
 SECTION_RE = re.compile(r'^ *\[([^\]]+)\] *(?:;.*)?$')
 LINE_COMMENT_RE = re.compile(r'[ \t]*(?:;.*)?$')
