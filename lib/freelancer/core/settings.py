@@ -146,8 +146,10 @@ def load(filename):
     settings = _ini.IniFile(filename)
     for section, defaults in _DEFAULTS.items():
         obj = settings.find(section)
-        if obj:
-            obj.update(defaults)
+        if obj is None:
+            continue
+        for key, value in defaults.items():
+            obj[key] = obj.get(key, value)
     
     general = settings.find('general') 
     if not general:
