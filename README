@@ -1,0 +1,83 @@
+The Python Freelancer Toolkit - A python API for parsing and modifying data files from Microsoft's game Freelancer 
+Author: Fenris_Wolf - YSPStudios, TekagisTreasure mod
+
+**** Please note this is NOT a stand alone tool. ****
+
+It is designed to be a base framework for building tools, or to be used in a interactive python shell.
+
+PyFL reads and parses ALL Freelancer ini files, and can manipulate the files writing changes back into them. It provides brief summaries of the contents (number of ships, guns, systems etc), and detailed summaries of your universe (which factions own bases in each system, who owns other objects, and who has a npc presence)
+
+Its uses are pretty much unlimited when working in a interactive shell, or if you can write custom tool functions.
+
+REQUIREMENTS:
+32bit python 2.7 (NOT 64bit, and NOT python 3.*)
+pywin32 python modules (required for flhash.dll and other 32bit dll files)
+blist python module
+
+OPTIONAL:
+VCForPython27 (required to compile the blist module)
+Adoxa's resource extraction tools (frc.exe and res2frc.exe)
+
+
+-----------------------------------------------------------------------------------------
+INI PARSING NOTES:
+None of PyFL's ini parsing rules are 'hardcoded' these are all stored in .ini files themselves, 
+in a format similar to FL's data files. Initially it reads the freelancer.ini [data] section to 
+get lists of files and what kind of content to expect. For example it reads:
+
+equipment = equipment\weapon_equip.ini
+
+and knows this is a 'equipment' file. In the PyFL\etc\parser directory there is a 'equipment.ini' 
+file, which contains templates for all the various equipment [Sections], each section has a series 
+of 'key = rules'. The 'keys' will match up with FL's ini files, and the 'rules' will tell PyFL how 
+to parse that line: if its required or optional, if its a sortkey like nickname, if its a ids value, 
+if the value is a integer/float/bool true/false etc, or if its a reference to another file PyFL should 
+load (like universe.ini points to the system files).
+
+Using this method, PyFL's parser can be tweaked, edited, or fixed by non-coders. It just requires 
+modding knowledge and some understanding of the parsing rules. It also functions as a documenting system 
+for learning FL's ini files, as you can browse the rules and see exactly whats meant to go in the ini 
+files.
+For example in the Equipment.ini template, in the [CounterMeasure] section, the key = rule:
+
+loot_appearance = req, word -m=Equipment:LootCrate
+
+tells us loot_appearance is required (req), contains a single value...a word (no spaces allowed) and must 
+match a [LootCrate] sortkey (in this case a nickname) located in one of the equipment files.
+
+
+-----------------------------------------------------------------------------------------
+KNOWN ISSUES AND BUGS:
+* Freelancer.ini has fx\explosions.ini listed as both 'explosions = ' and 'debris = '. The 
+parser doesn't like this as it only reads a file once, and under a single group. Therefore, ensure 
+'explosions = fx\explosions.ini' comes first in freelancer.ini
+
+* Room:Room_Info:scene lines are not properly parsed due to only allowing one -o argument per rule 
+line. The only effect is cityscape and planetscape files generate a error on some of these lines if a 
+argument appears after the thn script. The rest of the line is fully parsed but the final argument is 
+dropped.
+	
+* Various 'color' keys in the ini's support both byte (0 to 255) and float (0.0 to 1.0) values. The parser 
+doesn't agree with this, and may generate errors. Tweaking your rule files will fix this if your only uses 1 style 
+(byte or float, but not mixed)
+
+* Many various rule files need tweaking for better argument matching, currently they may generate false positive 
+errors. The cross reference validation (-m|--match) rules especially need tweaks as not all of them have been 
+inputted yet.
+
+* When using DataFile.set() or IniFile.set(), if the value is a list (declared multiline in the rules), the new 
+value list MUST be the same length as the old value list or a NotImplementedError exception is raised.
+
+* -m|--match rule option generates errors on robots without heads (space_costume = lines in system files)
+
+* -r regex rule option does not support spaces.
+
+* BINI compressed files not yet supported.
+
+* UTF files not yet supported.
+
+* Binary hexediting on the exe files not yet supported.
+
+* Writing ids names and infocards to resource dlls not yet supported using 'dll' method, (reading is fully functional).
+  frc method supports read and write
+
