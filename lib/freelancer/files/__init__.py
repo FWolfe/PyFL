@@ -28,8 +28,7 @@ import json
 import os
 from os.path import join, dirname, exists
 from zlib import crc32
-import freelancer.common as common
-import freelancer.exceptions as flexcept
+#from freelancer.core import log
 
 def list_directory(path):
     """Recursively lists all files in a directory"""
@@ -42,7 +41,7 @@ def list_directory(path):
 
 def copy_file(source_folder, dest_folder, path):
     """Copies a file, creating the destination path if needed"""
-    common.logger("Copying %s" % path)
+    #common.logger("Copying %s" % path)
     new_path = join(dest_folder, path)
     ori_path = join(source_folder, path)
     if not exists(dirname(new_path)):
@@ -52,8 +51,8 @@ def copy_file(source_folder, dest_folder, path):
 
 def json_load(path):
     """Loads a json file and returns the data"""
-    if not exists(path):
-        raise flexcept.FileMissingError(path)
+    #if not exists(path):
+    #    raise flexcept.FileMissingError(path)
     fih = open(path)
     data = fih.read()
     fih.close()
@@ -71,4 +70,12 @@ def get_file_crc(path):
     fih = open(path, 'rb')
     result = "%x" % (crc32(fih.read()) & 0xFFFFFFFF)
     fih.close()
+    return result
+
+def get_directory_crcs(basepath, lowercase=False):
+    result = {}
+    for file_name in list_directory(basepath):
+        if lowercase:
+            file_name = file_name.lower()
+        result[file_name] = get_file_crc(join(basepath, file_name))
     return result
