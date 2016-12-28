@@ -19,7 +19,7 @@ def _getpath(exe):
 
 def extract_hashes(output_path=None):
     with open(os.devnull, 'w') as devnull:
-        args = [_getpath('createid.exe'), '-n', '-oc', '-s', join(settings.general['path'], 'Data')]
+        args = [_getpath('createid.exe'), '-hmn', '-oc', '-s', join(settings.general['path'], 'Data')]
         output = check_output(args, stderr=devnull)
     output = output.splitlines()
     #output = NEWLINE_SPLIT_RE.split(output)

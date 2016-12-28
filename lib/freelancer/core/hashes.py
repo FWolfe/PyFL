@@ -27,10 +27,8 @@ def generate_cache(createid=True):
 
     csvr = csv.reader(output, delimiter=',', quotechar='"')
     for row in csvr:
-            sign, text = row[0:2]
-            sign = int(sign)
-            unsign = int(sign & 0xffffffff)
-            result = HashResult(unsign, sign, "0x%08x" % unsign, text)
+            unsign, hexh, sign, text = row[0:4]
+            result = HashResult(int(unsign), int(sign), hexh, text)
             low_t = text.lower() 
             old = _CACHE.get(low_t) 
             if old:
