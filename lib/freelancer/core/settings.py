@@ -155,6 +155,16 @@ def load(filename):
     general = settings.find('general') 
     if not general:
         raise FatalConfigurationError("[General] section is missing", False)
+
+    if not general.get('mp_account_path'):
+        try:
+            # try to find the mp accounts ourself
+            import ctypes.wintypes
+            buf= ctypes.create_unicode_buffer(ctypes.wintypes.MAX_PATH)
+            ctypes.windll.shell32.SHGetFolderPathW(0, 5, 0, 0, buf)
+            general['mp_account_path'] = r"%s\%s" % (buf.value, "My Games\Freelancer\Accts\MultiPlayer")
+        except ImportError:
+            pass
     # pass the settings on to freelancer.files.ini since it cant import them
     _ini.s_general = general
 

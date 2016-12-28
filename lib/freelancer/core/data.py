@@ -76,6 +76,14 @@ def get_sections(group, section, create=True):
     except KeyError:
         raise FLSectionError("No such section in data")
 
+def get_key(group, section, key):
+    """get_key(group, section, key)
+    """
+    sections = get_sections(group, section)
+    try:
+        return sections[nickname]
+    except KeyError:
+        return None
 
 def get_group_files(group):
     """get_group_files(group)

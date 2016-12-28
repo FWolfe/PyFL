@@ -88,6 +88,7 @@ def ids_name(ids):
     """ids_name(ids)
     Returns the ids name (string) for the given ids number, or None
     """
+    ids = int(ids)
     index, _ = ids_file_index(ids)
     return files[index].ids_name(ids)
 
@@ -96,6 +97,7 @@ def ids_info(ids):
     """ids_info(ids)
     Returns the ids info (xml) for the given ids number, or None
     """
+    ids = int(ids)
     index, _ = ids_file_index(ids)
     return files[index].ids_info(ids)
 
