@@ -18,9 +18,6 @@
 #
 # =============================================================================
 
-# Initial path setup python uses to look for the PyFL modules.
-# This can all be skipped by installing the contents of the PyFL\lib\ directory
-# into your Python27\Lib\site-packages directory
 import os
 import os.path
 import sys
@@ -30,13 +27,12 @@ sys.path[:] = [os.path.join(os.getcwd(), 'lib')] + sys.path
 
 # =============================================================================
 # Initial PyFL Imports
-import freelancer.core
-
+import freelancer.core as core
 # initialize the core
-freelancer.core.init(config_file='PyFL-Config.ini') 
+core.init(config_file='PyFL-Config.ini') 
 # queue all 'non-referenced' files to load
-freelancer.core.load_nonreferenced()
+core.load_nonreferenced()
 # load all files in the queue
-freelancer.core.load_queue()
+core.load_queue()
 # perform FL data cross-reference matches
-freelancer.core.validate_match_queue()
+core.validate_match_queue()

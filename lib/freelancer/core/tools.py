@@ -8,7 +8,6 @@ import os
 from os.path import join, splitext
 from subprocess import call, check_output
 from freelancer.core import settings 
-from freelancer.core.regex import NEWLINE_SPLIT_RE
 
 
 def _getpath(exe):

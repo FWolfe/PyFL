@@ -12,6 +12,7 @@ from . import data
 from . import parser
 from . import log
 from . import resources
+from . import hashes
 config = None
 
 
@@ -171,3 +172,4 @@ def init(config_file='PyFL-Config.ini', minimal=False):
     load_parser()
     load_config()
     load_resources()
+    hashes.generate_cache()
