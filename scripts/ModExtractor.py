@@ -125,7 +125,7 @@ log.log("ModExtractor: %s files checked, %s non-vanilla files copied" %
 if not patch_path:
     log.warn("ModExtractor: [ModExtractor] patch_path key not defined, skipping path creation")
     finished()
-log.notice("\nModExtractor: -------------------------")
+log.log("\nModExtractor: -------------------------")
 if not isdir(patch_path):
     log.info("ModExtractor: Creating patch directory")
     os.makedirs(patch_path)
