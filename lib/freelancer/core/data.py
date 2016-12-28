@@ -81,7 +81,7 @@ def get_key(group, section, key):
     """
     sections = get_sections(group, section)
     try:
-        return sections[nickname]
+        return sections[key]
     except KeyError:
         return None
 

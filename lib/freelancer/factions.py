@@ -23,7 +23,7 @@
 """
 
 from freelancer.core.resources import ids_name, ids_info
-from freelancer.core.data import get_sections
+from freelancer.core.data import get_sections, get_key
 
 
 def get_faction(nickname=None):
