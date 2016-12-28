@@ -1,10 +1,26 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Sat Dec 24 16:56:50 2016
+# =============================================================================
+#
+#    Copyright (C) 2016  Fenris_Wolf, YSPStudios
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 2 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+# =============================================================================
 
-@author: Fenris_Wolf
 """
-
+    freelancer.core.data
+"""
 
 import os
 #import freelancer.exceptions as flex
@@ -39,21 +55,34 @@ STATS_ARGS = 5
 STATS_ERRORS = 6
 
 #==============================================================================
-# 
+#
 #==============================================================================
-class FLGroupError(Exception):
-    def __init__(self, message, group):
-        log.error('FLData (%s): %s' % (group, message))
+class FLDataError(Exception):
+    def __init__(self, message):
+        log.error(message)
 
-class FLSectionError(Exception):
+
+class FLGroupError(FLDataError):
+    def __init__(self, message, group):
+        FLDataError.__init__(self, 'FLData (%s): %s' % (group, message))
+
+
+class FLSectionError(FLDataError):
     def __init__(self, message, group, section):
-        log.error('FLData (%s:%s): %s' % (group, section, message))
-    
+        FLDataError.__init__(self, 'FLData (%s:%s): %s' % (group, section, message))
+
+
+class FLKeyError(FLDataError):
+    def __init__(self, message, group, section):
+        FLDataError.__init__(self, 'FLData (%s:%s): %s' % (group, section, message))
+
+
 def get_group(group, create=False):
     """get_group(group)
     Returns a dict of DataSection() groups, where keys are the section names,
     and values are dict objects.
     """
+    group = group.lower()
     if create is True:
         _DATA[group] = _DATA.get(group, {})
     try:
@@ -67,6 +96,7 @@ def get_sections(group, section, create=True):
     Returns a dict of DataSections() from the specified group, where keys are the
     sortkeys (defined in the parser rule files) and values are DataSection() objects.
     """
+    section = section.lower()
     if create is True:
         grp = get_group(group, True)
         grp[section] = grp.get(section, {})
@@ -74,16 +104,16 @@ def get_sections(group, section, create=True):
     try:
         return get_group(group)[section]
     except KeyError:
-        raise FLSectionError("No such section in data")
+        raise FLSectionError("No such section in data", group, section)
 
 def get_key(group, section, key):
     """get_key(group, section, key)
     """
-    sections = get_sections(group, section)
+    key = key.lower()
     try:
-        return sections[key]
+        return get_sections(group, section)[key]
     except KeyError:
-        return None
+        raise FLKeyError("Invalid key %s" % key, group, section)
 
 def get_group_files(group):
     """get_group_files(group)
@@ -117,7 +147,7 @@ def find_by_nickname(sortkey, groups=None, sections=None):
     return results
 
 #==============================================================================
-# 
+#
 #==============================================================================
 
 def is_loaded(path):
@@ -147,7 +177,7 @@ def get_data_file(path):
     return _LOADED[path]
 
 #==============================================================================
-# 
+#
 #==============================================================================
 def queue_match(data):
     match_queue.append(data)
@@ -169,8 +199,8 @@ def add_reference(path):
 def add_unique_global_key(key, value):
     if _UNIQUE.has_key(key):
         stats_inc(STATS_ERRORS)
-        raise FLSectionError("Duplicate global unique '%s' in file %s (line %s)" % 
-                           (key, value.parent.path, value.index), value.group, value.section)
+        raise FLSectionError("Duplicate global unique '%s' in file %s (line %s)" %
+                             (key, value.parent.path, value.index), value.group, value.section)
     _UNIQUE[key] = value
 
 def add_unique_group_key(key, value):
@@ -178,7 +208,7 @@ def add_unique_group_key(key, value):
     gu = _GROUP_UNIQUE[value.group]
     if gu.has_key(key):
         stats_inc(STATS_ERRORS)
-        raise FLGroupError("Duplicate group unique '%s' in file %s (line %s)" % 
+        raise FLGroupError("Duplicate group unique '%s' in file %s (line %s)" %
                            (key, value.parent.path, value.index), value.group)
     gu[key] = value
 
@@ -189,13 +219,13 @@ def add_unique_section_key(key, value):
     data = data[value.section]
     if data.get(key):
         stats_inc(STATS_ERRORS)
-        raise FLSectionError("Duplicate group:section unique '%s' in file %s (line %s)" % 
+        raise FLSectionError("Duplicate group:section unique '%s' in file %s (line %s)" %
                              (key, value.parent.path, value.index), value.group, value.section)
     data[key] = value
 
 
 #==============================================================================
-# 
+#
 #==============================================================================
 def stats_inc(stat, value=1):
     _STATS[stat] += value
@@ -203,6 +233,6 @@ def stats_inc(stat, value=1):
 
 
 #==============================================================================
-# 
+#
 #==============================================================================
 
