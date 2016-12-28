@@ -26,19 +26,20 @@
 
 #from freelancer.bin import findHash
 from freelancer.core.resources import ids_name, ids_info
-from freelancer.core.data import get_group, get_sections, get_key
+from freelancer.core.data import get_group, get_sections, get_key, FLKeyError
 #from freelancer.core.data import get_sections
 #from freelancer.func import idsName
 #import freelancer.exceptions as flex
 
 def get_equipment(nickname):
-    """getEquipment(nickname)
+    """get_equipment(nickname)
     Returns a DataSection() object for the specified equipment.
     """
+    nickname = nickname.lower()
     for sections in get_group('equipment').values():
         if sections.has_key(nickname):
             return sections[nickname]
-    return None # ("No sortkey named %s in Equipement:*" % nickname)
+    raise FLKeyError("Invalid key %s" % nickname, 'equipment', '')
 
 
 
