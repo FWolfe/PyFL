@@ -40,7 +40,7 @@ def faction_name(name):
     """faction_name(nickname)
     Returns the ids name for the specified faction.
     """
-    ids = get_faction(name).get('ids_name', dtype=int)
+    ids = get_faction(name).get('ids_name', 0, dtype=int)
     return ids_name(ids)
 
 
@@ -48,7 +48,7 @@ def faction_short(name):
     """faction_short(nickname)
     Returns the short ids name for the specified faction.
     """
-    ids = get_faction(name).get('ids_short_name', dtype=int)
+    ids = get_faction(name).get('ids_short_name', 0, dtype=int)
     return ids_name(ids)
 
 
@@ -56,7 +56,7 @@ def faction_info(name):
     """faction_info(nickname)
     Returns the ids info for the specified faction.
     """
-    ids = get_faction(name).get('ids_info', dtype=int)
+    ids = get_faction(name).get('ids_info', 0, dtype=int)
     return ids_info(ids)
 
 
