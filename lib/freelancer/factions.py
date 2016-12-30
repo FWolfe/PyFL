@@ -101,7 +101,7 @@ def set_rep(faction_a, faction_b, value, update=False):
             rep_lines[index] = "%f, %s" % (value, faction_a)
     b.set('rep', rep_lines)
     if update:
-        a.parent.update()
+        a.file.update()
 
 
 def get_props(nickname):

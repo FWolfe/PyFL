@@ -198,14 +198,14 @@ class LineRule(object):
             except IndexError:
                 # TODO: inc error count
                 log.warn("FLData: Missing %s value (key:%s arg:#%s) in file %s (line %s)" % 
-                         (arg.type, key, expected_index, ini.parent.path, index + ini.index))
+                         (arg.type, key, expected_index, ini.file.path, index + ini.index))
                 break
 
             stats_inc(STATS_ARGS, 1) # increment total # of args
             if not call(value, options):
                 # TODO: inc error count
                 log.warn("FLData: Non matching %s value (key:%s arg:#%s) '%s' in file %s (line %s)" % 
-                         (arg.type, key, expected_index, value, ini.parent.path, index + ini.index))
+                         (arg.type, key, expected_index, value, ini.file.path, index + ini.index))
             #else:
             #    if call == _cmpIdsString:
             #        resources.addNameRef(int(value), ini, index, expected_index)
@@ -216,12 +216,12 @@ class LineRule(object):
             if options.get('max') is not None and float(value) > options['max']:
                 # TODO: inc error count
                 log.warn("FLData: Value %s is above max (key:%s arg:#%s) in file %s (line %s)" % 
-                         (value, key, expected_index, ini.parent.path, index + ini.index))
+                         (value, key, expected_index, ini.file.path, index + ini.index))
                 #ini.error(index, "Value %s is above max (%s #%s) '%s'" % (value, key, expected_index, value))
             if options.get('min') is not None and float(value) < options['min']:
                 # TODO: inc error count
                 log.warn("FLData: Value %s is below min (key:%s arg:#%s) in file %s (line %s)" % 
-                         (value, key, expected_index, ini.parent.path, index + ini.index))
+                         (value, key, expected_index, ini.file.path, index + ini.index))
                 #ini.error(index, "Value %s is below min (%s #%s) '%s'" % (value, key, expected_index, value))
 
             if options.get('match') and match_check:
@@ -230,7 +230,7 @@ class LineRule(object):
         if len(data) > len(expected):
                 # TODO: inc error count
             log.warn("FLData: Too many values for key %s in file %s (line %s)" %
-                     (key, ini.parent.path, index + ini.index))
+                     (key, ini.file.path, index + ini.index))
             #ini.error(index, "Too many values on line")
 
 

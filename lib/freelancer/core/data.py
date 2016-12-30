@@ -200,7 +200,7 @@ def add_unique_global_key(key, value):
     if _UNIQUE.has_key(key):
         stats_inc(STATS_ERRORS)
         raise FLSectionError("Duplicate global unique '%s' in file %s (line %s)" %
-                             (key, value.parent.path, value.index), value.group, value.section)
+                             (key, value.file.path, value.index), value.group, value.section)
     _UNIQUE[key] = value
 
 def add_unique_group_key(key, value):
@@ -209,7 +209,7 @@ def add_unique_group_key(key, value):
     if gu.has_key(key):
         stats_inc(STATS_ERRORS)
         raise FLGroupError("Duplicate group unique '%s' in file %s (line %s)" %
-                           (key, value.parent.path, value.index), value.group)
+                           (key, value.file.path, value.index), value.group)
     gu[key] = value
 
 def add_unique_section_key(key, value):
@@ -220,7 +220,7 @@ def add_unique_section_key(key, value):
     if data.get(key):
         stats_inc(STATS_ERRORS)
         raise FLSectionError("Duplicate group:section unique '%s' in file %s (line %s)" %
-                             (key, value.parent.path, value.index), value.group, value.section)
+                             (key, value.file.path, value.index), value.group, value.section)
     data[key] = value
 
 
@@ -236,3 +236,42 @@ def stats_inc(stat, value=1):
 #
 #==============================================================================
 
+def xpath(path):
+    """xpath(path)
+    xpath style data lookup. 'path' is a string represented like:
+    xpath('/group/section/name/key')
+    examples:
+    
+    xpath('/equipment') - returns the equipment data group
+
+    xpath('/equipment/thruster') - returns all thrusters from the 
+            equipment data group
+            
+    xpath('/equipment/thruster/my_thruster) - returns the thruster with the 
+        nickname 'my_thruster'
+        
+    xpath('/equipment/thruster/my_thruster/mass) - returns my_thruster's mass
+        as a string
+
+    xpath('/equipment/thruster/my_thruster/mass=float) - returns my_thruster's mass
+        as a float
+    """
+    raise NotImplementedError
+    path = path.split('/')
+    result = None
+    arglen = len(path)
+    if arglen == 0:
+        return _DATA
+    elif arglen == 1:
+        return get_group(path[0])
+    elif arglen == 2:
+        return get_sections(*path[0:2])
+    result = get_key(*path[0:3])
+    if arglen == 4:
+        try:
+            key, dtype = path[3].split('=')
+            dtype = {'bool':bool, 'int':int, 'float':float}.get(dtype, None)
+        except ValueError:
+            key, dtype = path[3], None
+        result = result.get(key, dtype=dtype)
+    return result
