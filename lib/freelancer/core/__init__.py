@@ -1,8 +1,27 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Sat Dec 24 16:34:29 2016
 
-@author: Fenris_Wolf
+# =============================================================================
+#
+#    Copyright (C) 2016  Fenris_Wolf, YSPStudios
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 2 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+# =============================================================================
+
+"""
+    freelancer.core
+
 """
 from os.path import join, splitext
 import freelancer.files.ini as ini
@@ -23,7 +42,7 @@ def load_parser():
 def load_resources():
     rset = settings.resources
     if rset is None: # no resource setting defined, skip loading
-        # this probably should log a warning but some PyFL scripts 
+        # this probably should log a warning but some PyFL scripts
         # intentionally dont need resource access
         return
     resources.load(['resources.dll'] + config.find('resources')['dll'])
@@ -40,7 +59,7 @@ def load_config(queue_files=True):
     if queue_files is False:
         return
     dta = config.find('data')
-    for line in dta.raw[1:]:
+    for line in dta.lines[1:]:
         try:
             match = LINE_SPLIT_RE.match(line)
             key, value, _ = match.groups() # _ is comments
@@ -55,7 +74,10 @@ def load_data_file(filename, group=None):
     Loads a single ini file, with the specified parser rule group.
     """
     try:
-        return ini.DataIniFile(join('DATA', filename), settings.general['path'], group)
+        return ini.IniFile(join('DATA', filename),
+                           directory=settings.general['path'],
+                           group=group,
+                           flags=ini.FLAG_FLDATA + ini.FLAG_LOG + ini.FLAG_STAT)
     except ini.FileReadError:
         return None
 
@@ -108,7 +130,7 @@ def load_nonreferenced():
 def validate_match_queue():
     """performMatchQueue()
     Does all queued cross reference validation checks (-m|--match rule arguments),
-    comparing ini sections that link to other sections. Note unless everything 
+    comparing ini sections that link to other sections. Note unless everything
     (all files) were loaded, this wont work. Logs the errors.
     """
     import re
@@ -119,14 +141,14 @@ def validate_match_queue():
     count = 0
     for queue_index, queue_item in enumerate(data.match_queue):
         result = None
-        ini, index, match, local, value = queue_item
+        obj, index, match, local, value = queue_item
         try:
             groups, sections = _mre.match(match.lower()).groups()
         except AttributeError:
             print queue_item
             exit()
         if not groups:
-            groups = ini.parent.group
+            groups = obj.file.group
         groups = groups.split('|')
         if sections:
             sections = sections.split('|')
@@ -135,7 +157,7 @@ def validate_match_queue():
 
         if local: # ignore groups
             try:
-                result = ini.parent.local_uniques[value]
+                result = obj.file.keymap[value]
                 if not result.section in sections:
                     result = None
             except KeyError:
@@ -149,10 +171,11 @@ def validate_match_queue():
 
         if not result:
             count = 1 + count
-            log.warn('FLData: %s doesnt match any %s from file %s (line %s)' % (value, match, ini.parent.path, ini.index + index))
+            log.warn('FLData: %s doesnt match any %s from file %s (line %s)' %
+                     (value, match, obj.file.path, obj.index + index))
 
-    log.log("Cross Reference Results: %s items, %s errors, %s seconds" % 
-                    (len(data.match_queue), count, time.time() - start_time))
+    log.log("Cross Reference Results: %s items, %s errors, %s seconds" %
+            (len(data.match_queue), count, time.time() - start_time))
 
 
 def init(config_file='PyFL-Config.ini', minimal=False):
