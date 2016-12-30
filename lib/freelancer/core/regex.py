@@ -31,7 +31,7 @@ SECTION_RE = re.compile(r'^ *\[([^\]]+)\] *(?:;.*)?$')
 LINE_COMMENT_RE = re.compile(r'[ \t]*(?:;.*)?$')
 
 LINE_SPLIT_RE = re.compile(r'^([^=;]+?) *= *(.+?)(\W*;.*)?$')
-LINE_TRIM_RE = re.compile(r'[\t ]+$')
+LINE_TRIM_RE = re.compile(r'[\t ]+$') # redundant, use .rstrip()
 
 OPTION_RE = re.compile(r'^(\w+)([\+\*]|\*[0-9]+)?$') # parser rule options
 BOOL_RE = re.compile(r'^(?:1|0|true|false)$', re.I) # parser rule bool
