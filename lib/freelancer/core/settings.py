@@ -141,8 +141,6 @@ def load(filename):
     handled by freelancer.core.init()
     """
     global settings, general, resources, executables
-    # TODO: Error handling note we cant properly log anything til after the
-    # logger is loaded.  Unfortuantly the logger cant load until after settings
 
     settings = _ini.IniFile(filename)
     for section, defaults in _DEFAULTS.items():
@@ -150,9 +148,10 @@ def load(filename):
         if obj is None:
             continue
         for key, value in defaults.items():
+            # XXX: atm this doesnt force obj.lines to update, this may change
             obj[key] = obj.get(key, value)
-    
-    general = settings.find('general') 
+
+    general = settings.find('general')
     if not general:
         raise FatalConfigurationError("[General] section is missing", False)
 
@@ -160,9 +159,10 @@ def load(filename):
         try:
             # try to find the mp accounts ourself
             import ctypes.wintypes
-            buf= ctypes.create_unicode_buffer(ctypes.wintypes.MAX_PATH)
+            buf = ctypes.create_unicode_buffer(ctypes.wintypes.MAX_PATH)
             ctypes.windll.shell32.SHGetFolderPathW(0, 5, 0, 0, buf)
-            general['mp_account_path'] = r"%s\%s" % (buf.value, "My Games\Freelancer\Accts\MultiPlayer")
+            path = r"%s\%s" % (buf.value, r"My Games\Freelancer\Accts\MultiPlayer")
+            general['mp_account_path'] = path
         except ImportError:
             pass
     # pass the settings on to freelancer.files.ini since it cant import them
@@ -183,7 +183,7 @@ def get_section(section):
 
 def get_setting(section, key, default=None, dtype=None):
     """get_setting(section, key, default=None)
-    Returns the specified key from the section name or default. Raises a 
+    Returns the specified key from the section name or default. Raises a
     ConfigurationError if the section doesnt exist.
     """
     sec = get_section(section)
