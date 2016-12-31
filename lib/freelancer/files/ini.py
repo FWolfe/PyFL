@@ -18,8 +18,22 @@
 #
 # =============================================================================
 
-"""
+r"""
     freelancer.files.ini - objects for dealing with freelancers data ini files.
+
+    Due to the setup of Freelancer's .ini files, PyFL requires a libary as
+    standard ones such as configparser wont do. Some features include:
+    Write mode that preserves blank lines and ALL comments, template .ini files
+    for data validation, and allowing multiple [Sections] of the same name and
+    multiline 'key = value' pairs.
+
+
+    Parser template files
+    Templates define a template that defines what [Section] and 'key = value'
+    lines are allowed, what keys can be included multiple times, and validates
+    the value of each line. By default these are stored the etc\parser directory.
+
+
 """
 from os.path import join, exists
 
@@ -78,6 +92,14 @@ class IniFile(list):
         FL data files this usually points to the Freelancer\Data directory
     group = a parser rule group to use when parsing.
     flags = bitwise combo of FLAG_LOG, FLAG_STAT, FLAG_FLDATA
+
+    IniFile objects function as lists, so ini [Sections] can be accessed by
+    index, iterated through, or resorted.
+
+    # get all [Zone] sections from New York system
+    zones = [z for z in systems.get_system('li01') if z.section == 'zone']
+
+    Each [Section] in the ini file is created as a IniSection object.
     """
     fullpath = None # full path (or relative to our working PyFL directory)
     changed = False # True if file has changed and needs update()
@@ -333,9 +355,13 @@ class IniFile(list):
 
 class IniSection(dict):
     """IniSection(self, section, lines=None, index=None, parent=None)
-    Object representing a [section] in a ini file. It is not required to manually
+    Object representing a [Section] in a ini file. It is not required to manually
     create these in your code, they are automatically generated when parsing a ini
     file.
+
+    IniSection objects function as dicts:
+    zone_names = [z['nickname'] for z in zones]
+
     """
     section = None # name of section
     lines = None # raw data
@@ -420,6 +446,21 @@ class IniSection(dict):
         specified the returned value is converted to that data type (str, float,
         int etc). dtype can also be a function that takes a single argument and
         returns a value.
+
+        zone_pos = [z.get('pos', dtype=positions.Pos) for z in zones]
+
+        ship.get('ids_name') or ship['ids_name'] both return string versions
+        ship.get('ids_name', default=0, dtype=int) will return a int value.
+
+        When bool is passed as the dtype, the strings 'ON, YES, TRUE, 1' all return
+        True, and 'OFF, NO, FALSE, 0' will return False:
+
+        # only returns False if bool_key is not set. If set to 'False' this will
+        # still return True
+        bool(section.get('bool_key', default=False))
+
+        # returns a proper True/False
+        section.get('bool_key', default=False, dtype=bool)
         """
         value = dict.get(self, key, default)
         if dtype is bool:
