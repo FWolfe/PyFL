@@ -40,8 +40,7 @@ def faction_name(name):
     """faction_name(nickname)
     Returns the ids name for the specified faction.
     """
-    ids = get_faction(name).get('ids_name', 0, dtype=int)
-    return ids_name(ids)
+    return ids_name(get_faction(name))
 
 
 def faction_short(name):
@@ -56,8 +55,7 @@ def faction_info(name):
     """faction_info(nickname)
     Returns the ids info for the specified faction.
     """
-    ids = get_faction(name).get('ids_info', 0, dtype=int)
-    return ids_info(ids)
+    return ids_info(get_faction(name))
 
 
 def get_rep(faction_a, faction_b):
@@ -83,25 +81,24 @@ def adj_rep(faction_a, faction_b, value, min_value=-0.9, max_value=0.9):
     set_rep(faction_a, faction_b, rep)
 
 
+def _set_rep(this_fact, other_fact, value):
+    obj = get_faction(this_fact)
+    rep_lines = obj.get('rep')
+    for index, rep in enumerate(rep_lines):
+        if rep.lower().endswith(other_fact.lower()):
+            rep_lines[index] = "%f, %s" % (value, other_fact)
+            break
+    obj.set('rep', rep_lines)
+    
+
 def set_rep(faction_a, faction_b, value, update=False):
     """set_rep(faction_a, faction_b, value)
     Sets the reputation of faction_a and faction_b to the specified value.
     """
-    a = get_faction(faction_a)
-    b = get_faction(faction_b)
-    rep_lines = a.get('rep')
-    for index, rep in enumerate(rep_lines):
-        if rep.endswith(faction_b):
-            rep_lines[index] = "%f, %s" % (value, faction_b)
-    a.set('rep', rep_lines)
-
-    rep_lines = b.get('rep')
-    for index, rep in enumerate(rep_lines):
-        if rep.endswith(faction_a):
-            rep_lines[index] = "%f, %s" % (value, faction_a)
-    b.set('rep', rep_lines)
+    _set_rep(faction_a, faction_b, value)
+    _set_rep(faction_b, faction_a, value)
     if update:
-        a.file.update()
+        get_faction(faction_a).file.update()
 
 
 def get_props(nickname):
