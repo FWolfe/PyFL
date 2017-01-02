@@ -24,12 +24,8 @@
 # pylint: disable=C0301
 # pylint: disable=C0103
 
-#from freelancer.bin import findHash
 from freelancer.core.resources import ids_name, ids_info
 from freelancer.core.data import get_group, get_sections, get_key, FLKeyError
-#from freelancer.core.data import get_sections
-#from freelancer.func import idsName
-#import freelancer.exceptions as flex
 
 def get_equipment(nickname):
     """get_equipment(nickname)
@@ -44,211 +40,164 @@ def get_equipment(nickname):
 
 
 # =============================================================================
+def _get(section, nickname):
+    if nickname is None:
+        return get_sections('equipment', section)
+    return get_key('equipment', section, nickname)
+
 
 def get_armor(nickname=None):
     """getArmor(nickname)
     """
-    if nickname is None:
-        return get_sections('equipment', 'armor')
-    return get_key('equipment', 'armor', nickname)
+    return _get('armor', nickname)
 
 
 def get_attachedfx(nickname=None):
     """getAttachedFx(nickname)
     """
-    if nickname is None:
-        return get_sections('equipment', 'attachedfx')
-    return get_key('equipment', 'attachedfx', nickname)
+    return _get('attachedfx', nickname)
 
 
 def get_cargopod(nickname=None):
     """getCargoPod(nickname)
     """
-    if nickname is None:
-        return get_sections('equipment', 'cargopod')
-    return get_key('equipment', 'cargopod', nickname)
+    return _get('cargopod', nickname)
 
 
 def get_cloakingdevice(nickname=None):
     """getCloakingDevice(nickname)
     """
-    if nickname is None:
-        return get_sections('equipment', 'cloakingdevice')
-    return get_key('equipment', 'cloakingdevice', nickname)
+    return _get('cloakingdevice', nickname)
 
 
 def get_commodity(nickname=None):
     """getCommodity(nickname)
     """
-    if nickname is None:
-        return get_sections('equipment', 'commodity')
-    return get_key('equipment', 'commodity', nickname)
+    return _get('commodity', nickname)
 
 
 def get_countermeasure(nickname=None):
     """getCounterMeasure(nickname)
     """
-    if nickname is None:
-        return get_sections('equipment', 'countermeasure')
-    return get_key('equipment', 'countermeasure', nickname)
+    return _get('countermeasure', nickname)
 
 
 def get_countermeasuredropper(nickname=None):
     """getCounterMeasureDropper(nickname)
     """
-    if nickname is None:
-        return get_sections('equipment', 'countermeasuredropper')
-    return get_key('equipment', 'countermeasuredropper', nickname)
+    return _get('countermeasuredropper', nickname)
 
 
 def get_engine(nickname=None):
     """getEngine(nickname)
     """
-    if nickname is None:
-        return get_sections('equipment', 'engine')
-    return get_key('equipment', 'engine', nickname)
+    return _get('engine', nickname)
 
 
 def get_explosion(nickname=None):
     """getExplosion(nickname)
     """
-    if nickname is None:
-        return get_sections('equipment', 'explosion')
-    return get_key('equipment', 'explosion', nickname)
+    return _get('explosion', nickname)
 
 
 def get_gun(nickname=None):
     """getGun(nickname)
     """
-    if nickname is None:
-        return get_sections('equipment', 'gun')
-    return get_key('equipment', 'gun', nickname)
+    return _get('gun', nickname)
 
 
 def get_internalfx(nickname=None):
     """getInternalFx(nickname)
     """
-    if nickname is None:
-        return get_sections('equipment', 'internalfx')
-    return get_key('equipment', 'internalfx', nickname)
+    return _get('internalfx', nickname)
 
 
 def get_light(nickname=None):
     """getLight(nickname)
     """
-    if nickname is None:
-        return get_sections('equipment', 'light')
-    return get_key('equipment', 'light', nickname)
+    return _get('light', nickname)
 
 
 def get_lootcrate(nickname=None):
     """getLootCrate(nickname)
     """
-    if nickname is None:
-        return get_sections('equipment', 'lootcrate')
-    return get_key('equipment', 'lootcrate', nickname)
+    return _get('lootcrate', nickname)
 
 
 def get_mine(nickname=None):
     """getMine(nickname)
     """
-    if nickname is None:
-        return get_sections('equipment', 'mine')
-    return get_key('equipment', 'mine', nickname)
+    return _get('mine', nickname)
 
 
 def get_minedropper(nickname=None):
     """getMineDropper(nickname)
     """
-    if nickname is None:
-        return get_sections('equipment', 'minedropper')
-    return get_key('equipment', 'minedropper', nickname)
+    return _get('minedropper', nickname)
 
 
 def get_motor(nickname=None):
     """getMotor(nickname)
     """
-    if nickname is None:
-        return get_sections('equipment', 'motor')
-    return get_key('equipment', 'motor', nickname)
+    return _get('motor', nickname)
 
 
 def get_munition(nickname=None):
     """getMunition(nickname)
     """
-    if nickname is None:
-        return get_sections('equipment', 'munition')
-    return get_key('equipment', 'munition', nickname)
+    return _get('munition', nickname)
 
 
 def get_power(nickname=None):
     """getPower(nickname)
     """
-    if nickname is None:
-        return get_sections('equipment', 'power')
-    return get_key('equipment', 'power', nickname)
+    return _get('power', nickname)
 
 
 def get_repairkit(nickname=None):
     """getRepairKit(nickname)
     """
-    if nickname is None:
-        return get_sections('equipment', 'repairkit')
-    return get_key('equipment', 'repairkit', nickname)
+    return _get('repairkit', nickname)
 
 
 def get_scanner(nickname=None):
     """getScanner(nickname)
     """
-    if nickname is None:
-        return get_sections('equipment', 'scanner')
-    return get_key('equipment', 'scanner', nickname)
+    return _get('equipment', nickname)
 
 
 def get_shield(nickname=None):
     """getShield(nickname)
     """
-    if nickname is None:
-        return get_sections('equipment', 'shield')
-    return get_key('equipment', 'shield', nickname)
+    return _get('shield', nickname)
 
 
 def get_shieldbattery(nickname=None):
     """getShieldBattery(nickname)
     """
-    if nickname is None:
-        return get_sections('equipment', 'shieldbattery')
-    return get_key('equipment', 'shieldbattery', nickname)
+    return _get('shieldbattery', nickname)
 
 
 def get_shieldgenerator(nickname=None):
     """getShieldGenerator(nickname)
     """
-    if nickname is None:
-        return get_sections('equipment', 'shieldgenerator')
-    return get_key('equipment', 'shieldgenerator', nickname)
+    return _get('shieldgenerator', nickname)
 
 
 def get_thruster(nickname=None):
     """getThruster(nickname)
     """
-    if nickname is None:
-        return get_sections('equipment', 'thruster')
-    return get_key('equipment', 'thruster', nickname)
+    return _get('thruster', nickname)
 
 
 def get_tractor(nickname=None):
     """getTractor(nickname)
     """
-    if nickname is None:
-        return get_sections('equipment', 'tractor')
-    return get_key('equipment', 'tractor', nickname)
+    return _get('tractor', nickname)
 
 
 def get_tradelane(nickname=None):
     """getTradelane(nickname)
     """
-    if nickname is None:
-        return get_sections('equipment', 'tradelane')
-    return get_key('equipment', 'tradelane', nickname)
+    return _get('tradelane', nickname)
 
