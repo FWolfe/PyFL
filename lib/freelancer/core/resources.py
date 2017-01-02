@@ -44,7 +44,6 @@
 # pylint: disable=W0231
 # pylint: disable=W0223
 
-from subprocess import call
 from os.path import join, exists, splitext
 import re
 
@@ -54,8 +53,8 @@ try:
 except ImportError:
     pass
 
-
 from freelancer.core import settings, log, tools
+from freelancer.files.ini import IniSection
 
 BLOCK_RE = re.compile(r'^([SH]) ([0-9]+)(?: (~))?(?:\W+(.+))?$')
 EOL_RE = re.compile('(?:\r\n|\r)')
@@ -87,7 +86,10 @@ def ids_file_index(ids):
 def ids_name(ids):
     """ids_name(ids)
     Returns the ids name (string) for the given ids number, or None
+    If ids is a IniSection object, attempts to find the ids_name key.
     """
+    if isinstance(ids, IniSection):
+        ids = ids.get('ids_name', 0, dtype=int)
     ids = int(ids)
     index, _ = ids_file_index(ids)
     return files[index].ids_name(ids)
@@ -96,7 +98,10 @@ def ids_name(ids):
 def ids_info(ids):
     """ids_info(ids)
     Returns the ids info (xml) for the given ids number, or None
+    If ids is a IniSection object, attempts to find the ids_info key.
     """
+    if isinstance(ids, IniSection):
+        ids = ids.get('ids_info', 0, dtype=int)
     ids = int(ids)
     index, _ = ids_file_index(ids)
     return files[index].ids_info(ids)
