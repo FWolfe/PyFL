@@ -25,7 +25,7 @@ Many mods are setup differently, sometimes different tools add things into
 the mod files: FL Explorer adds [FLExplorer] sections, Flac uses all kinds 
 of different keys embedded in FL's data files, we can not accurately predict 
 the data structure of every mod.
-Therefore, data parsing rules but be designed in a way the mod developers 
+Therefore, data parsing rules are designed in a way the mod developers 
 themselves can edit, without having to learn python.
 
 PyFL's parser attempts to solve this by using a ini template system, however 
@@ -34,9 +34,9 @@ requirement for the actual python engine.
     
 
 * Cross-platform, without Wine.
-PyFL needs to be able to run most of its features on linux machines as well as 
-windows.  This way it can run on servers separate from the FLServer (such as 
-webservers).  OS specific python modules are avoided.  
+PyFL can run most of its features on linux machines as well as windows, 
+enabling it to run on servers separate from the FLServer (such as webservers).  
+OS specific python modules are avoided.  
 
 Instead of requiring windows specific modules to access the resource .dll 
 files, PyFL can read .frc text files created with adoxa's res2frc.exe program. 
@@ -49,7 +49,7 @@ resources using the .dll method.
 This would seem like a no brainer, but most read/write engines fail to do this.
 
 
-* ini files are list objects, and [Sections] are dict objects.
+* ini files are python list objects, and [Sections] are dict objects.
 
 
 * Effort to follow PEP8 standards
