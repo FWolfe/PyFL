@@ -9,24 +9,58 @@ Author: Fenris_Wolf - YSPStudios, TekagisTreasure mod
 **** Please note this is NOT a stand alone tool. ****
 
 It is designed to be a base framework for building tools, or to be used in a 
-interactive python shell.
-
-PyFL reads and parses ALL Freelancer ini files, and can manipulate the files 
-writing changes back into them. It provides brief summaries of the contents 
-(number of ships, guns, systems etc), and detailed summaries of your universe 
-(which factions own bases in each system, who owns other objects, and who has 
-a npc presence)
+interactive python shell.  It provides a python interface for parsing and 
+error checking ALL of Freelancer's .ini files, as well as write new data into 
+them. PyFL can also read/write character files and .dll resources with python.
+(UTF files and binary offsets support is planned)
 
 Its uses are pretty much unlimited when working in a interactive shell, or if 
 you can write custom tool functions.
 
 
+Features Include:
+
+* ini parsing methods are tweakable by modders, not just python developers
+Many mods are setup differently, sometimes different tools add things into 
+the mod files: FL Explorer adds [FLExplorer] sections, Flac uses all kinds 
+of different keys embedded in FL's data files, we can not accurately predict 
+the data structure of every mod.
+Therefore, data parsing rules but be designed in a way the mod developers 
+themselves can edit, without having to learn python.
+
+PyFL's parser attempts to solve this by using a ini template system, however 
+due to the oddness of some of FL's data lines, its increases the complexity 
+requirement for the actual python engine.
+    
+
+* Cross-platform, without Wine.
+PyFL needs to be able to run most of its features on linux machines as well as 
+windows.  This way it can run on servers separate from the FLServer (such as 
+webservers).  OS specific python modules are avoided.  
+
+Instead of requiring windows specific modules to access the resource .dll 
+files, PyFL can read .frc text files created with adoxa's res2frc.exe program. 
+If PyFL is to run on linux you must create the frc files with wine or a 
+windows machine.  PyFL on windows can automatically do this, or access 
+resources using the .dll method.
+
+
+* ini editing preserves all blank lines and comments.
+This would seem like a no brainer, but most read/write engines fail to do this.
+
+
+* ini files are list objects, and [Sections] are dict objects.
+
+
+* Effort to follow PEP8 standards
+Ensure readability and standardization of the python code.
+
+
+-------------------------------------------------------------------------------
 REQUIREMENTS:
 python 2.7 (not tested with python 3.* yet)
-blist python module
 
 OPTIONAL:
-VCForPython27 (required to compile the blist module)
 Adoxa's tools (frc.exe, res2frc.exe and createid.exe)
     http://adoxa.altervista.org/freelancer/tools.html
 pywin32 python modules (if using .dlls for resources)
@@ -49,21 +83,6 @@ that line: if its required or optional, if its a sortkey like nickname, if its
 a ids value, if the value is a integer/float/bool true/false etc, or if its a 
 reference to another file PyFL should load (like universe.ini points to the 
 system files).
-
-Using this method, PyFL's parser can be tweaked, edited, or fixed by non-coders. 
-It just requires modding knowledge and some understanding of the parsing rules. 
-It also functions as a documenting system for learning FL's ini files, as you 
-can browse the rules and see exactly whats meant to go in the ini files.
-
-For example in the Equipment.ini template, in the [CounterMeasure] section, 
-the key = rule:
-
-loot_appearance = req, word -m=Equipment:LootCrate
-
-tells us loot_appearance is required (req), contains a single value...a word 
-(no spaces allowed) and must match a [LootCrate] sortkey (in this case a 
-nickname) located in one of the equipment files.
-
 
 -----------------------------------------------------------------------------------------
 KNOWN ISSUES AND BUGS:
@@ -88,7 +107,7 @@ KNOWN ISSUES AND BUGS:
     (-m|--match) rules especially need tweaks as not all of them have been 
     inputted yet.
 
-* When using DataFile.set() or IniFile.set(), if the value is a list (declared 
+* When using IniFile.set(), if the value is a list (declared 
     multiline in the rules), the new value list MUST be the same length as the 
     old value list or a NotImplementedError exception is raised.
 
