@@ -40,10 +40,6 @@
         *full read/write access
         *loads all resources into memory on start
 """
-# pylint: disable=C0103
-# pylint: disable=W0231
-# pylint: disable=W0223
-
 from os.path import join, exists, splitext
 import re
 
@@ -126,7 +122,7 @@ def load(dllnames):
     global s_general, s_resources, method
     s_general = settings.general
     s_resources = settings.resources
-    method = s_resources.get('method', 'FRC').upper() == 'FRC' and 'FRC' or 'DLL'
+    method = s_resources.get('method', 'FRC').upper()
     dllnames = [x[:-4] for x in dllnames]
     rclass = None
     if method == 'FRC':
@@ -154,9 +150,11 @@ def compile_frcs(dllnames):
     If adoxa's frc.exe is installed, will compile the .frc files into the mod's
     .dll files
     """
-    for _, name in enumerate(dllnames):
+    for name in dllnames:
         name = splitext(name)[0]
-        tools.extract_frc(name)
+        tools.compile_frc(name)
+
+
 
 #==============================================================================
 #
@@ -264,14 +262,13 @@ class FrcFile(ResourceFile):
             raise ResourceError('Resource File Missing: %s' % filename)
         fih = open(filename, 'r')
         lines = []
-        lines = fih.readlines()
+        lines = fih.read()
         fih.close()
+        lines = lines.splitlines()
 
         last_comments = []
         last_block = None
         for index, line in enumerate(lines):
-            line = line.strip('\n')
-            line = line.strip('\r')
             if not line:
                 continue
             if COMMENT_RE.match(line):
@@ -356,7 +353,7 @@ class FrcFile(ResourceFile):
         if len(ids) > 0:
             prev = ids[0] - 1
         for i in ids:
-            if i != 1 + prev:
+            if i != 1 + prev: # numbers skipped, blank line spacer
                 fih.write("\n")
             prev = i
             fih.write("%s\n" % self.strings[i])
@@ -440,3 +437,8 @@ class FrcBlock(object):
 
     def __str__(self):
         return self.build_string()
+
+
+if __name__ == '__main__':
+    # testing block
+    pass
